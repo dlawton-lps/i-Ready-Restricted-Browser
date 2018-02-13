@@ -1,8 +1,7 @@
-package com.iready.restrictedAccess;
+package com.iready.restrictedAccess.frames;
 
 import java.awt.AWTException;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
@@ -14,118 +13,33 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.time.format.DateTimeFormatter;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 
-public class Main {
-
-	static JFrame frame = new JFrame();
-	static JFrame hoverBar = new JFrame();
+public class Popups {
 	
-	static int FRAME_HEIGHT = 95;
+	/**
+	 * [!] Display data.
+	 */
 	static double DISPLAY_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	static double DISPLAY_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	
-	public static void main(String[] args) throws IOException {
-		
-		frame.setVisible(false);
-		
-		hoverBar.setLocation(0, ((int)DISPLAY_HEIGHT - 30));
-		hoverBar.setSize((int)DISPLAY_WIDTH, 30);
-		hoverBar.setUndecorated(true);
-		hoverBar.getContentPane().setBackground(Color.BLACK);
-		hoverBar.setVisible(true);
-		hoverBar.setAlwaysOnTop(true);
-		
-		JButton activateBtn = new JButton("Options");
-		activateBtn.setBackground(Color.BLACK);
-		activateBtn.setForeground(Color.WHITE);
-		activateBtn.setFont(new Font("Arial", Font.BOLD, 12));
-		
-		Runtime.getRuntime().exec("taskkill /F /IM explorer.exe");
-		
-		/* Image Settings */
-		URL pURL = Main.class.getResource("/powerSymbol.jpg");
-		URL sURL = Main.class.getResource("/soundSymbol.jpg");
-		
-		/* Control Settings */
-		JButton powerButton = new JButton(new ImageIcon(pURL));
-		powerButton.setSize(100, 50);
-		powerButton.setBorder(BorderFactory.createEmptyBorder());
-		powerButton.setContentAreaFilled(false);
-		powerButton.setVisible(true);
-		
-		JButton soundButton = new JButton(new ImageIcon(sURL));
-		soundButton.setSize(100, 50);
-		soundButton.setBorder(BorderFactory.createEmptyBorder());
-		soundButton.setContentAreaFilled(false);
-		soundButton.setVisible(true);
-		
-		/* Event Listeners */
-		powerButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				powerOptions();	
-			}
-		});
-		soundButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					soundOptions();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		
-		/* Layout Settings */
-		FlowLayout layout = new FlowLayout();
-		frame.setLayout(layout);
-		
-		/* JFrame Settings */
-		frame.setTitle("Restricted Access Bar");
-		frame.setSize((int)DISPLAY_WIDTH, FRAME_HEIGHT);
-		frame.setResizable(false);
-		frame.setLocation(0, ((int)DISPLAY_HEIGHT - FRAME_HEIGHT));
-		frame.setUndecorated(true);
-		frame.add(powerButton);
-		frame.add(soundButton);
-		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setAlwaysOnTop(true);
-		
-		activateBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if(activateBtn.getText().equals(new String("Options")))
-				{
-					frame.setVisible(true);
-					activateBtn.setText("Minimize");
-					hoverBar.setLocation(0, (frame.getLocation().y - 30));
-				}
-				else if(activateBtn.getText().equals(new String("Minimize")))
-				{
-					frame.setVisible(false);
-					hoverBar.setLocation(0, ((int)DISPLAY_HEIGHT - 30));
-					activateBtn.setText("Options");
-				}
-			}
-		});
-		
-		hoverBar.add(activateBtn);
-		hoverBar.setVisible(true);
-	}
+	/**
+	 * [!] Datetime data.
+	 */
+	static DateTimeFormatter timeStampPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
 	
-	public static void powerOptions()
+	/**
+	 * [!] Method for creating the popup window for controlling power options.
+	 * @param toolFrame
+	 * @param hoverBar
+	 */
+	public static void powerOptions(Toolbar toolFrame, AccessBar hoverBar)
 	{
 		JFrame powerWindow = new JFrame("Power Options");
 		powerWindow.setSize(500, 500);
@@ -165,7 +79,6 @@ public class Main {
 		powerWindow.add(closeButton);
 		powerWindow.add(backButton);
 		
-		frame.toFront();
 		powerWindow.setVisible(true);
 		
 		//Back button listener
@@ -181,11 +94,9 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(confirmDialog("log off"))
-				{
-					DateTimeFormatter timeStampPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-					
+				{	
 					powerWindow.dispose();
-					frame.dispose();
+					toolFrame.dispose();
 					hoverBar.dispose();
 					
 					BufferedImage image = null;
@@ -217,11 +128,9 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(confirmDialog("close i-Ready"))
-				{
-					DateTimeFormatter timeStampPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-					
+				{	
 					powerWindow.dispose();
-					frame.dispose();
+					toolFrame.dispose();
 					hoverBar.dispose();
 					
 					BufferedImage image = null;
@@ -256,23 +165,17 @@ public class Main {
 			}
 		});
 	
-		//Power button listener
+		/**
+		 * [!] Shutdown button listener.
+		 */
 		shutdownButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(confirmDialog("shut down"))
 				{
 					
-					try {
-						Runtime.getRuntime().exec("cmd.exe /c start C:/tech/i-Ready Restricted Browser/Revive.bat");
-					} catch (IOException e4) {
-						// TODO Auto-generated catch block
-						e4.printStackTrace();
-					}
-					DateTimeFormatter timeStampPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-					
 					powerWindow.dispose();
-					frame.dispose();
+					toolFrame.dispose();
 					hoverBar.dispose();
 					
 					BufferedImage image = null;
@@ -300,12 +203,31 @@ public class Main {
 		});
 	}
 	
+	/**
+	 * [!] Method for reviving explorer.exe when iRRB is exited.
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unused")
+	public static void revive() throws IOException
+	{
+		Process p = new ProcessBuilder("explorer.exe").start();
+	}
+	
+	/**
+	 * [!] Method to open volume mixer window.
+	 * @throws IOException
+	 */
 	public static void soundOptions() throws IOException
 	{
 		String volumeControlCommand = "sndvol.exe -f";
 		Runtime.getRuntime().exec(volumeControlCommand);
 	}
 	
+	/**
+	 * [!] Method to double check with the user before doing 'func'.
+	 * @param func
+	 * @return boolean (continue?)
+	 */
 	public static boolean confirmDialog(String func)
 	{
 		int confirmed = JOptionPane.showConfirmDialog(null, "Are you sure you want to " + func + "?");
@@ -313,13 +235,6 @@ public class Main {
 			return true;
 		else
 			return false;
-	}
-	
-	public static void revive() throws IOException
-	{
-		Process p = new ProcessBuilder("explorer.exe").start();
-		/*for(int i = 0; i < 3; i++)
-			Runtime.getRuntime().exec("explorer.exe");*/
 	}
 
 }
