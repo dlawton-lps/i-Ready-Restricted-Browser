@@ -25,7 +25,7 @@ public class Main {
 		Runtime.getRuntime().exec("taskkill /F /IM explorer.exe");
 		
 		String webTarget = "https://login.i-ready.com/?utm_source=WordofMouth&utm_medium=vanityURL&utm_content=iready_com&utm_campaign=Vanity";
-		Runtime.getRuntime().exec("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe --chrome-frame --incognito --kiosk --force-device-scale-factor=0.88 " + webTarget);
+		Runtime.getRuntime().exec("C:/progra~2/Google/Chrome/Application/chrome.exe --chrome-frame --incognito --kiosk --force-device-scale-factor=0.88 " + webTarget);
 		
 		/**
 		 * [!] Toolbar action listeners.
